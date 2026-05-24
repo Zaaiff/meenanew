@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#fdf6f0" />
+  <title>For You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --rose: #e8a4b8;
+      --rose-deep: #c97b94;
+      --cream: #fdf6f0;
+      --ink: #3d2c35;
+      --gold: #d4a574;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Outfit", sans-serif;
+      font-weight: 300;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .hidden { display: none !important; }
+
+    #hearts-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .float-heart {
+      position: absolute;
+      font-size: 1rem;
+      opacity: 0.12;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.15; }
+      90% { opacity: 0.08; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    #content { position: relative; z-index: 1; }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--rose), var(--rose-deep));
+      width: 0%;
+      z-index: 100;
+      transition: width 0.1s linear;
+    }
+
+    /* ── Gate ── */
+    #gate {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      z-index: 50;
+      background: var(--cream);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(232, 164, 184, 0.4), transparent);
+    }
+
+    .gate-card {
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .gate-card .eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--rose-deep);
+      margin-bottom: 1rem;
+    }
+
+    .gate-card h1 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.85rem, 6vw, 2.5rem);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    .gate-card .gate-intro {
+      font-size: 0.95rem;
+      opacity: 0.8;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .gate-steps {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .gate-step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(201, 123, 148, 0.3);
+    }
+
+    .gate-step-dot.active { background: var(--rose-deep); }
+
+    .gate-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      text-align: left;
+    }
+
+    .gate-form label {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--rose-deep);
+    }
+
+    .gate-form input {
+      width: 100%;
+      padding: 1rem 1.15rem;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 1px solid rgba(232, 164, 184, 0.5);
+      border-radius: 0.75rem;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .gate-form input:focus {
+      outline: none;
+      border-color: var(--rose-deep);
+      box-shadow: 0 0 0 3px rgba(232, 164, 184, 0.25);
+    }
+
+    .gate-form button {
+      padding: 1rem;
+      font-size: 1rem;
+      font-family: inherit;
+      background: var(--rose-deep);
+      color: #fff;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      min-height: 48px;
+      touch-action: manipulation;
+      margin-top: 0.5rem;
+    }
+
+    .gate-form button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .gate-error {
+      font-size: 0.85rem;
+      color: #b54a6a;
+      min-height: 1.25rem;
+      text-align: center;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 3rem 1.25rem;
+      padding-top: max(3rem, env(safe-area-inset-top));
+      background-image:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232, 164, 184, 0.45), transparent);
+    }
+
+    .hero .eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--rose-deep);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2.5rem, 9vw, 4rem);
+      font-weight: 400;
+      max-width: 16ch;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero .lead {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.2rem, 4vw, 1.55rem);
+      font-style: italic;
+      color: var(--rose-deep);
+      max-width: 36ch;
+      margin-bottom: 2.5rem;
+    }
+
+    .counter-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 340px;
+      margin-bottom: 2rem;
+    }
+
+    .counter-item {
+      background: rgba(255,255,255,0.7);
+      border-radius: 1rem;
+      padding: 1rem 0.5rem;
+      border: 1px solid rgba(232, 164, 184, 0.35);
+    }
+
+    .counter-item .num {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.75rem, 6vw, 2.25rem);
+      color: var(--rose-deep);
+      line-height: 1;
+    }
+
+    .counter-item .lbl {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 0.35rem;
+      opacity: 0.75;
+    }
+
+    .quote-block {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.1rem, 3.5vw, 1.35rem);
+      font-style: italic;
+      max-width: 32ch;
+      opacity: 0.9;
+      line-height: 1.65;
+      padding: 0 0.5rem;
+    }
+
+    .scroll-hint {
+      margin-top: 2.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      opacity: 0.45;
+      animation: bob 2s ease-in-out infinite;
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+
+    /* ── Sections ── */
+    .section-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 4rem 1.25rem;
+    }
+
+    .section-wrap.wide { max-width: 900px; }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--rose-deep);
+      text-align: center;
+      margin-bottom: 0.75rem;
+    }
+
+    section h2 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2rem, 6vw, 2.75rem);
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      color: var(--rose-deep);
+    }
+
+    .section-desc {
+      text-align: center;
+      max-width: 40ch;
+      margin: 0 auto 2.5rem;
+      opacity: 0.8;
+      font-size: 0.95rem;
+    }
+
+    .letter-block {
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(232, 164, 184, 0.35);
+      border-radius: 1.25rem;
+      padding: 2rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 24px rgba(61, 44, 53, 0.05);
+    }
+
+    .letter-block h3 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.65rem;
+      color: var(--rose-deep);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .letter-block p {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.15rem, 3.5vw, 1.3rem);
+      line-height: 1.9;
+      white-space: pre-wrap;
+      text-align: center;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 0.45rem;
+      top: 0.5rem;
+      bottom: 0.5rem;
+      width: 2px;
+      background: linear-gradient(var(--rose), var(--gold));
+      opacity: 0.5;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2rem;
+      padding-left: 1.5rem;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -1.55rem;
+      top: 0.4rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--rose-deep);
+      box-shadow: 0 0 0 4px rgba(232, 164, 184, 0.35);
+    }
+
+    .timeline-item .date {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rose-deep);
+      margin-bottom: 0.35rem;
+    }
+
+    .timeline-item h3 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.45rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .timeline-item p { opacity: 0.85; font-size: 0.95rem; }
+
+    /* Adore grid */
+    .adore-grid {
+      display: grid;
+      gap: 0.85rem;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 520px) {
+      .adore-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .adore-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 1.15rem 1.25rem;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 2px 14px rgba(61, 44, 53, 0.06);
+    }
+
+    .adore-item span:first-child {
+      color: var(--rose-deep);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    /* Milestones */
+    .milestones {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 640px) {
+      .milestones { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .milestone {
+      text-align: center;
+      padding: 1.35rem 0.85rem;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 2px 16px rgba(61, 44, 53, 0.06);
+    }
+
+    .milestone .label {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rose-deep);
+      margin-bottom: 0.5rem;
+    }
+
+    .milestone .value {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.2rem;
+      line-height: 1.35;
+    }
+
+    /* Notes */
+    .notes-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .note-card {
+      padding: 1.35rem 1.5rem;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(232,164,184,0.15));
+      border-radius: 1rem;
+      border-left: 4px solid var(--rose-deep);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(61, 44, 53, 0.05);
+    }
+
+    /* Promises */
+    .promises-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .promise-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 2px 14px rgba(61, 44, 53, 0.06);
+    }
+
+    .promise-num {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.5rem;
+      color: var(--rose-deep);
+      opacity: 0.6;
+      min-width: 2ch;
+    }
+
+    .promise-item p {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.2rem;
+      line-height: 1.55;
+    }
+
+    /* Reasons */
+    .reasons-grid {
+      display: grid;
+      gap: 0.85rem;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 480px) {
+      .reasons-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .reason-card {
+      perspective: 900px;
+      min-height: 110px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      font: inherit;
+      width: 100%;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .reason-inner {
+      position: relative;
+      width: 100%;
+      min-height: 110px;
+      transition: transform 0.55s ease;
+      transform-style: preserve-3d;
+    }
+
+    .reason-card.revealed .reason-inner { transform: rotateY(180deg); }
+
+    .reason-front, .reason-back {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      border-radius: 1rem;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      text-align: center;
+    }
+
+    .reason-front {
+      background: #fff;
+      box-shadow: 0 2px 16px rgba(61, 44, 53, 0.07);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rose-deep);
+    }
+
+    .reason-back {
+      background: linear-gradient(145deg, var(--rose), var(--gold));
+      transform: rotateY(180deg);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.15rem;
+      line-height: 1.45;
+    }
+
+    .reasons-progress {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--rose-deep);
+    }
+
+    /* Gallery */
+    .gallery {
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 520px) {
+      .gallery { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .photo-card {
+      border-radius: 1.25rem;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 6px 28px rgba(61, 44, 53, 0.1);
+      margin: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .photo-card:active { transform: scale(0.98); }
+
+    .photo-card img {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-card .caption {
+      padding: 1rem;
+      text-align: center;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.15rem;
+      color: var(--rose-deep);
+    }
+
+    .photo-placeholder {
+      aspect-ratio: 4 / 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(145deg, rgba(232,164,184,0.3), rgba(212,165,116,0.25));
+      color: var(--rose-deep);
+      font-size: 0.85rem;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    /* Song */
+    .song-intro {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      max-width: 38ch;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
+    }
+
+    .song-wrap {
+      border-radius: 1.25rem;
+      overflow: hidden;
+      box-shadow: 0 6px 28px rgba(61, 44, 53, 0.1);
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+
+    .song-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Finale */
+    .finale {
+      text-align: center;
+      padding: 5rem 1.25rem 6rem;
+      background: linear-gradient(180deg, transparent, rgba(232,164,184,0.2));
+    }
+
+    .finale .ps {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.15rem, 3.5vw, 1.35rem);
+      max-width: 38ch;
+      margin: 0 auto 2.5rem;
+      line-height: 1.85;
+      font-style: italic;
+    }
+
+    .finale .line {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+
+    .finale .signature {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2rem, 8vw, 2.75rem);
+      color: var(--rose-deep);
+    }
+
+    .finale-hearts {
+      margin-top: 2rem;
+      font-size: 1.5rem;
+      letter-spacing: 0.6em;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 1; }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .divider {
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.25rem;
+      opacity: 0.35;
+      letter-spacing: 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progress"></div>
+
+  <div id="gate">
+    <div class="gate-card">
+      <p class="eyebrow">Private</p>
+      <h1 id="gate-title">This is for you</h1>
+      <p class="gate-intro">Two answers unlock everything below. Only you should know them.</p>
+      <div class="gate-steps" aria-hidden="true">
+        <span class="gate-step-dot active" id="dot-1"></span>
+        <span class="gate-step-dot" id="dot-2"></span>
+      </div>
+      <form class="gate-form" id="gate-form">
+        <div id="gate-step-1">
+          <label for="gate-nick">What do I call you?</label>
+          <input type="text" id="gate-nick" autocomplete="off" autocapitalize="words" placeholder="Your nickname" />
+        </div>
+        <div id="gate-step-2" class="hidden">
+          <label for="gate-secret">Our secret word</label>
+          <input type="password" id="gate-secret" autocomplete="off" autocapitalize="off" placeholder="Exact spelling matters" />
+        </div>
+        <button type="submit" id="gate-btn">Continue</button>
+      </form>
+      <p class="gate-error" id="gate-error" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div id="content" class="hidden">
+    <div id="hearts-bg" aria-hidden="true"></div>
+
+    <header class="hero">
+      <p class="eyebrow" id="hero-eyebrow"></p>
+      <h1 id="hero-title"></h1>
+      <p class="lead" id="hero-subtitle"></p>
+      <div class="counter-box" id="counter-box">
+        <div class="counter-item"><div class="num" id="count-days">—</div><div class="lbl">Days</div></div>
+        <div class="counter-item"><div class="num" id="count-hours">—</div><div class="lbl">Hours</div></div>
+        <div class="counter-item"><div class="num" id="count-mins">—</div><div class="lbl">Minutes</div></div>
+      </div>
+      <blockquote class="quote-block" id="opening-quote"></blockquote>
+      <p class="scroll-hint">Keep scrolling</p>
+    </header>
+
+    <div class="divider fade-in">♥ ♥ ♥</div>
+
+    <div class="section-wrap fade-in" id="timeline-section">
+      <p class="section-label">Chapter one</p>
+      <h2>Our story</h2>
+      <p class="section-desc">A few moments that matter — and all the ones still to come.</p>
+      <div class="timeline" id="timeline"></div>
+    </div>
+
+    <div class="section-wrap fade-in" id="letters-section">
+      <p class="section-label">Chapter two</p>
+      <h2>Letters for you</h2>
+      <p class="section-desc">Read slowly. I meant every line.</p>
+      <div id="letter-blocks"></div>
+    </div>
+
+    <div class="section-wrap fade-in" id="adore-section">
+      <p class="section-label">Chapter three</p>
+      <h2>Things I adore</h2>
+      <p class="section-desc">Little truths I think about when I think about you.</p>
+      <div class="adore-grid" id="adore-list"></div>
+    </div>
+
+    <div class="section-wrap fade-in" id="milestones-section">
+      <p class="section-label">Chapter four</p>
+      <h2>Kept close to my heart</h2>
+      <div class="milestones" id="milestones"></div>
+    </div>
+
+    <div class="section-wrap fade-in" id="notes-section">
+      <p class="section-label">Chapter five</p>
+      <h2>Notes I'd leave on your mirror</h2>
+      <div class="notes-stack" id="little-notes"></div>
+    </div>
+
+    <div class="section-wrap fade-in" id="promises-section">
+      <p class="section-label">Chapter six</p>
+      <h2 id="promises-title">My promise to you</h2>
+      <div class="promises-list" id="promises"></div>
+    </div>
+
+    <div class="section-wrap wide fade-in" id="reasons-section">
+      <p class="section-label">Chapter seven</p>
+      <h2>Reasons I love you</h2>
+      <p class="section-desc">Tap each card — there are many, because there are many reasons.</p>
+      <div class="reasons-grid" id="reasons"></div>
+      <p class="reasons-progress" id="reasons-progress">0 / 0 revealed</p>
+    </div>
+
+    <div class="section-wrap wide fade-in" id="gallery-section">
+      <p class="section-label">Chapter eight</p>
+      <h2>Us in pictures</h2>
+      <p class="section-desc">Moments I never want to forget.</p>
+      <div class="gallery" id="gallery"></div>
+    </div>
+
+    <div class="section-wrap fade-in hidden" id="song-section">
+      <p class="section-label">Chapter nine</p>
+      <h2 id="song-heading">Our song</h2>
+      <p class="song-intro" id="song-dedication"></p>
+      <div class="song-wrap" id="song-embed"></div>
+    </div>
+
+    <footer class="finale fade-in">
+      <p class="ps" id="ps-note"></p>
+      <p class="line" id="closing-line"></p>
+      <p class="signature" id="signature"></p>
+      <p class="finale-hearts" aria-hidden="true">♥ ♥ ♥ ♥ ♥</p>
+    </footer>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    const P = typeof PAGE !== "undefined" ? PAGE : {};
+    let gateStep = 1;
+    let failCount = 0;
+    let lockUntil = 0;
+    let revealedReasons = 0;
+
+    function escapeHtml(str) {
+      const d = document.createElement("div");
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    function toggleSection(sectionId, show) {
+      const el = document.getElementById(sectionId);
+      if (el) el.classList.toggle("hidden", !show);
+    }
+
+    function isLocked() {
+      return Date.now() < lockUntil;
+    }
+
+    function lockGate(seconds) {
+      lockUntil = Date.now() + seconds * 1000;
+      const btn = document.getElementById("gate-btn");
+      btn.disabled = true;
+      const tick = () => {
+        const left = Math.ceil((lockUntil - Date.now()) / 1000);
+        if (left <= 0) {
+          btn.disabled = false;
+          document.getElementById("gate-error").textContent = "";
+          return;
+        }
+        document.getElementById("gate-error").textContent =
+          `Too many tries. Wait ${left}s…`;
+        requestAnimationFrame(() => setTimeout(tick, 500));
+      };
+      tick();
+    }
+
+    function unlock() {
+      document.getElementById("gate").classList.add("hidden");
+      document.getElementById("content").classList.remove("hidden");
+      initContent();
+      initHearts();
+      initProgress();
+    }
+
+    function setupGate() {
+      document.getElementById("gate-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (isLocked()) return;
+
+        const err = document.getElementById("gate-error");
+
+        if (gateStep === 1) {
+          const nick = document.getElementById("gate-nick").value.trim().toLowerCase();
+          const expected = (P.gateNickname || P.nickname || "Meena").trim().toLowerCase();
+          if (nick === expected) {
+            gateStep = 2;
+            document.getElementById("gate-step-1").classList.add("hidden");
+            document.getElementById("gate-step-2").classList.remove("hidden");
+            document.getElementById("dot-1").classList.remove("active");
+            document.getElementById("dot-2").classList.add("active");
+            document.getElementById("gate-btn").textContent = "Unlock";
+            err.textContent = "";
+            document.getElementById("gate-secret").focus();
+          } else {
+            failCount++;
+            err.textContent = "That's not it. Think of what only I call you.";
+            if (failCount >= (P.lockoutAttempts || 5)) {
+              failCount = 0;
+              lockGate(P.lockoutSeconds || 45);
+            }
+          }
+          return;
+        }
+
+        const secret = document.getElementById("gate-secret").value.trim();
+        const expectedSecret = (P.secretWord || "MeenaZaif").trim();
+        const secretOk =
+          secret === expectedSecret ||
+          secret.toLowerCase() === expectedSecret.toLowerCase();
+
+        if (secretOk) {
+          err.textContent = "";
+          unlock();
+        } else {
+          failCount++;
+          err.textContent = "Wrong secret — try MeenaZaif (one word, M and Z capital).";
+          if (failCount >= (P.lockoutAttempts || 5)) {
+            failCount = 0;
+            lockGate(P.lockoutSeconds || 45);
+          }
+        }
+      });
+    }
+
+    function updateCounter() {
+      const start = new Date(P.togetherSince || "2024-06-01");
+      const now = new Date();
+      const diff = Math.max(0, now - start);
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins = Math.floor((diff % 3600000) / 60000);
+      document.getElementById("count-days").textContent = days.toLocaleString();
+      document.getElementById("count-hours").textContent = hours;
+      document.getElementById("count-mins").textContent = mins;
+    }
+
+    function initHearts() {
+      const bg = document.getElementById("hearts-bg");
+      for (let i = 0; i < 18; i++) {
+        const h = document.createElement("span");
+        h.className = "float-heart";
+        h.textContent = "♥";
+        h.style.left = `${Math.random() * 100}%`;
+        h.style.animationDuration = `${12 + Math.random() * 18}s`;
+        h.style.animationDelay = `${Math.random() * 10}s`;
+        h.style.fontSize = `${0.75 + Math.random() * 1}rem`;
+        bg.appendChild(h);
+      }
+    }
+
+    function initProgress() {
+      const bar = document.getElementById("progress");
+      window.addEventListener("scroll", () => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = h > 0 ? `${(window.scrollY / h) * 100}%` : "0%";
+      }, { passive: true });
+    }
+
+    function initContent() {
+      const displayName = P.herName || "you";
+      const nick = P.nickname || displayName;
+
+      document.title = `For ${displayName}`;
+      document.getElementById("hero-eyebrow").textContent = `For ${displayName}`;
+      document.getElementById("hero-title").textContent = P.title || "";
+      document.getElementById("hero-subtitle").textContent = P.subtitle || "";
+      document.getElementById("opening-quote").textContent = P.openingQuote || "";
+      document.getElementById("closing-line").textContent = P.closingLine || "With love,";
+      document.getElementById("signature").textContent = P.yourName || "";
+      document.getElementById("ps-note").textContent = P.psNote || "";
+
+      updateCounter();
+      setInterval(updateCounter, 60000);
+
+      const timelineEl = document.getElementById("timeline");
+      timelineEl.innerHTML = "";
+      (P.timeline || []).forEach((item) => {
+        const el = document.createElement("div");
+        el.className = "timeline-item";
+        el.innerHTML = `
+          <p class="date">${escapeHtml(item.date)}</p>
+          <h3>${escapeHtml(item.title)}</h3>
+          <p>${escapeHtml(item.text)}</p>`;
+        timelineEl.appendChild(el);
+      });
+
+      const lettersEl = document.getElementById("letter-blocks");
+      lettersEl.innerHTML = "";
+      const sections = P.letterSections && P.letterSections.length
+        ? P.letterSections
+        : P.letter
+          ? [{ title: "For you", body: P.letter }]
+          : [];
+      sections.forEach((sec) => {
+        const block = document.createElement("article");
+        block.className = "letter-block";
+        block.innerHTML = `
+          <h3>${escapeHtml(sec.title)}</h3>
+          <p>${escapeHtml(sec.body)}</p>`;
+        lettersEl.appendChild(block);
+      });
+
+      const adoreEl = document.getElementById("adore-list");
+      adoreEl.innerHTML = "";
+      (P.adoreList || []).forEach((text) => {
+        const el = document.createElement("div");
+        el.className = "adore-item";
+        el.innerHTML = `<span>♥</span><span>${escapeHtml(text)}</span>`;
+        adoreEl.appendChild(el);
+      });
+
+      const milestonesEl = document.getElementById("milestones");
+      milestonesEl.innerHTML = "";
+      (P.milestones || []).forEach((m) => {
+        const card = document.createElement("div");
+        card.className = "milestone";
+        card.innerHTML = `<p class="label">${escapeHtml(m.label)}</p><p class="value">${escapeHtml(m.value)}</p>`;
+        milestonesEl.appendChild(card);
+      });
+
+      const notesEl = document.getElementById("little-notes");
+      notesEl.innerHTML = "";
+      const notes = P.littleNotes || [];
+      notes.forEach((text) => {
+        const card = document.createElement("div");
+        card.className = "note-card";
+        card.textContent = text;
+        notesEl.appendChild(card);
+      });
+      toggleSection("notes-section", notes.length > 0);
+
+      const promisesEl = document.getElementById("promises");
+      promisesEl.innerHTML = "";
+      const promiseList = P.promises || [];
+      document.getElementById("promises-title").textContent =
+        P.promisesTitle || "My promise to you";
+      promiseList.forEach((text, i) => {
+        const el = document.createElement("div");
+        el.className = "promise-item";
+        el.innerHTML = `<span class="promise-num">${i + 1}</span><p>${escapeHtml(text)}</p>`;
+        promisesEl.appendChild(el);
+      });
+      toggleSection("promises-section", promiseList.length > 0);
+
+      const reasons = P.reasons || [];
+      const reasonsEl = document.getElementById("reasons");
+      const progressEl = document.getElementById("reasons-progress");
+      progressEl.textContent = `0 / ${reasons.length} revealed`;
+      reasonsEl.innerHTML = "";
+      revealedReasons = 0;
+
+      reasons.forEach((text, i) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "reason-card";
+        card.innerHTML = `
+          <div class="reason-inner">
+            <div class="reason-front">Reason #${i + 1}</div>
+            <div class="reason-back">${escapeHtml(text)}</div>
+          </div>`;
+        card.addEventListener("click", () => {
+          const wasRevealed = card.classList.contains("revealed");
+          card.classList.toggle("revealed");
+          if (!wasRevealed && card.classList.contains("revealed")) {
+            revealedReasons++;
+            progressEl.textContent = `${revealedReasons} / ${reasons.length} revealed`;
+          } else if (wasRevealed && !card.classList.contains("revealed")) {
+            revealedReasons--;
+            progressEl.textContent = `${revealedReasons} / ${reasons.length} revealed`;
+          }
+        });
+        reasonsEl.appendChild(card);
+      });
+      toggleSection("reasons-section", reasons.length > 0);
+
+      const galleryEl = document.getElementById("gallery");
+      galleryEl.innerHTML = "";
+      const allPhotos = [
+        ...(P.couplePhotos || []),
+        ...(P.herPhotos || []),
+        ...(P.photos || []),
+      ];
+      allPhotos.forEach((photo) => {
+        const card = document.createElement("figure");
+        card.className = "photo-card";
+        const img = document.createElement("img");
+        img.alt = photo.caption || `Photo for ${nick}`;
+        img.loading = "lazy";
+        img.src = photo.src;
+        img.onerror = () => {
+          const ph = document.createElement("div");
+          ph.className = "photo-placeholder";
+          ph.textContent = `Add ${photo.src.split("/").pop()} to the images folder`;
+          img.replaceWith(ph);
+        };
+        const cap = document.createElement("figcaption");
+        cap.className = "caption";
+        cap.textContent = photo.caption || "";
+        card.append(img, cap);
+        galleryEl.appendChild(card);
+      });
+
+      if (P.songEmbedUrl) {
+        document.getElementById("song-section").classList.remove("hidden");
+        document.getElementById("song-heading").textContent = P.songTitle || "Our song";
+        document.getElementById("song-dedication").textContent = P.songDedication || "";
+        document.getElementById("song-embed").innerHTML =
+          `<iframe src="${P.songEmbedUrl}" title="Our song" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add("visible")),
+        { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+      );
+      document.querySelectorAll(".fade-in").forEach((el) => observer.observe(el));
+    }
+
+    setupGate();
+  </script>
+</body>
+</html>
